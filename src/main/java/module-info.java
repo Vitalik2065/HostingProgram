@@ -7,6 +7,8 @@ module com.example.giantprojekt {
     requires org.apache.poi.poi;
     requires org.apache.poi.ooxml;
     requires com.google.gson;
+    requires net.dv8tion.jda;
+
 
     opens com.example.giantprojekt to javafx.fxml;
     exports com.example.giantprojekt;
