@@ -2,6 +2,7 @@ package com.example.giantprojekt.service;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ResourceBundle;
 
 import net.dv8tion.jda.api.entities.User;
@@ -15,6 +16,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import com.example.giantprojekt.service.DiscordAssignmentHandler;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
 public class DiscordService extends ListenerAdapter {
 
     private JDA jda;
@@ -65,6 +68,10 @@ public class DiscordService extends ListenerAdapter {
         try {
             new DiscordAssignmentHandler().assignDiscordIdToServerRow(uuid, discordId);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidFormatException e) {
             throw new RuntimeException(e);
         }
 
