@@ -18,22 +18,33 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import com.example.giantprojekt.service.DiscordAssignmentHandler;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
+import com.example.giantprojekt.service.AddDisIdByEmail;
+
 public class DiscordService extends ListenerAdapter {
 
     private JDA jda;
 
 
     public void startBot(String token) throws LoginException {
-        JDABuilder.createDefault(token,
+        JDA jda = JDABuilder.createDefault(token,
                         GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.MESSAGE_CONTENT
                 )
                 .addEventListeners(this)
-                .build()
-                .upsertCommand("disadd", "назначить discord‑id серверу")
+                .build();
+
+
+                jda.upsertCommand("disadd", "назначить discord‑id серверу")
                 .addOption(OptionType.STRING, "uuid",   "Server UUID", true)
                 .addOption(OptionType.USER,   "member", "Участник (mention)", true)
+
                 .queue();
+
+
+                jda.upsertCommand("dissbyeall", "добавить discord-id всем серверам")
+                        .addOption(OptionType.STRING, "email", "User Email", true)
+                        .addOption(OptionType.USER, "member", "Участник (mention)", true)
+                        .queue();
 
 
 
@@ -59,26 +70,35 @@ public class DiscordService extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (!event.getName().equalsIgnoreCase("disadd")) return;
-
-        String uuid = event.getOption("uuid").getAsString();
-        User user = event.getOption("member").getAsUser();
-        String discordId = user.getId();
-
         try {
-            new DiscordAssignmentHandler().assignDiscordIdToServerRow(uuid, discordId);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidFormatException e) {
-            throw new RuntimeException(e);
-        }
+            if (event.getName().equalsIgnoreCase("disadd")) {
+                String uuid = event.getOption("uuid").getAsString();
+                User user = event.getOption("member").getAsUser();
+                String discordId = user.getId();
 
-        event.reply("✅ Участник " + user.getAsMention() +
-                        " привязан к серверу " + uuid)
-                .setEphemeral(true)
-                .queue();
+                new DiscordAssignmentHandler().assignDiscordIdToServerRow(uuid, discordId);
+
+                event.reply("✅ Участник " + user.getAsMention() +
+                                " привязан к серверу " + uuid)
+                        .setEphemeral(true)
+                        .queue();
+            }
+            else if (event.getName().equalsIgnoreCase("dissbyeall")) {
+                String email = event.getOption("email").getAsString();
+                User user = event.getOption("member").getAsUser();
+                String discordId = user.getId();
+
+                new AddDisIdByEmail().AddEmailToAll(email, discordId);
+
+                event.reply("✅ Discord ID привязан ко всем серверам для email: " + email)
+                        .setEphemeral(true)
+                        .queue();
+            }
+        } catch (Exception e) {
+            event.reply("❌ Произошла ошибка: " + e.getMessage())
+                    .setEphemeral(true)
+                    .queue();
+        }
     }
 
 
