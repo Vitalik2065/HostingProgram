@@ -1,14 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="fxml.MainView"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.giantprojekt.ui.controller.MainViewController"
+      spacing="10">
 
-</AnchorPane>
+    <!-- Отступы вокруг содержимого -->
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <!-- Панель поиска и кнопка Refresh -->
+    <HBox spacing="10">
+        <TextField fx:id="filterField" HBox.hgrow="ALWAYS"
+                   promptText="Поиск по UUID или имени…"/>
+        <Button text="Refresh"
+                onAction="#onRefresh"/>
+    </HBox>
+
+    <!-- Таблица серверов -->
+    <TableView fx:id="serversTable" prefHeight="600" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="uuidColumn"        text="UUID"            prefWidth="200"/>
+            <TableColumn fx:id="idColumn"          text="ID"              prefWidth="50"/>
+            <TableColumn fx:id="nameColumn"        text="Name"            prefWidth="150"/>
+            <TableColumn fx:id="descriptionColumn" text="Description"     prefWidth="200"/>
+            <TableColumn fx:id="memoryColumn"      text="Memory"          prefWidth="80"/>
+            <TableColumn fx:id="swapColumn"        text="Swap"            prefWidth="80"/>
+            <TableColumn fx:id="diskColumn"        text="Disk"            prefWidth="80"/>
+            <TableColumn fx:id="ioColumn"          text="IO"              prefWidth="60"/>
+            <TableColumn fx:id="cpuColumn"         text="CPU"             prefWidth="60"/>
+            <TableColumn fx:id="databasesColumn"   text="Databases"       prefWidth="80"/>
+            <TableColumn fx:id="allocationsColumn" text="Allocations"     prefWidth="80"/>
+            <TableColumn fx:id="backupsColumn"     text="Backups"         prefWidth="80"/>
+            <TableColumn fx:id="userIdColumn"      text="User ID"         prefWidth="80"/>
+            <TableColumn fx:id="userEmailColumn"   text="User Email"      prefWidth="150"/>
+            <TableColumn fx:id="nodeColumn"        text="Node"            prefWidth="100"/>
+            <TableColumn fx:id="allocationColumn"  text="Allocation"      prefWidth="100"/>
+            <TableColumn fx:id="nestColumn"        text="Nest"            prefWidth="100"/>
+            <TableColumn fx:id="eggColumn"         text="Egg"             prefWidth="100"/>
+            <TableColumn fx:id="startupColumn"     text="Startup Command" prefWidth="300"/>
+            <TableColumn fx:id="imageColumn"       text="Image"           prefWidth="200"/>
+            <TableColumn fx:id="createdAtColumn"   text="Created At"      prefWidth="180"/>
+            <TableColumn fx:id="updatedAtColumn"   text="Updated At"      prefWidth="180"/>
+            <TableColumn fx:id="suspendedColumn"   text="Suspended"       prefWidth="80"/>
+        </columns>
+    </TableView>
+
+    <!-- Статус -->
+    <Label fx:id="statusLabel" text="Готово"/>
+</VBox>

@@ -1,10 +1,8 @@
-package com.example.giantprojekt.service;
+package com.example.giantprojekt.service.DiscordServices;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ResourceBundle;
 
+import com.example.giantprojekt.service.DiscordServices.DiscordAssignmentHandler;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.JDABuilder;
@@ -15,10 +13,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import com.example.giantprojekt.service.DiscordAssignmentHandler;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-
-import com.example.giantprojekt.service.AddDisIdByEmail;
+import com.example.giantprojekt.service.DiscordServices.AddDisIdByEmail;
 
 public class DiscordService extends ListenerAdapter {
 

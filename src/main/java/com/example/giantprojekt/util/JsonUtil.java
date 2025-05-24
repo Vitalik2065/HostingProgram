@@ -1,4 +1,4 @@
 package com.example.giantprojekt.util;
 
-public class LoggingUtils {
+public class JsonUtil {
 }
