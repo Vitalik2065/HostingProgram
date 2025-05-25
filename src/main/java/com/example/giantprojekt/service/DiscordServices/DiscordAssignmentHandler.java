@@ -3,65 +3,80 @@ package com.example.giantprojekt.service.DiscordServices;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.*;
 import java.util.ResourceBundle;
 
 public class DiscordAssignmentHandler {
-    private static final String EXCEL_RESOURCE = ResourceBundle
+
+    // Берём имя файла из application.properties, например "output.xlsx"
+    private static final String EXCEL_FILE_NAME = ResourceBundle
             .getBundle("application")
             .getString("excel.file.name");
 
+    // Индексы колонок: UUID в 0-й, Discord ID в 23-й (поправь при необходимости)
+    private static final int UUID_COLUMN_INDEX    = 0;
     private static final int DISCORD_COLUMN_INDEX = 23;
 
     /**
-     * Находит строку с данным UUID и записывает в неё discordId.
-     * Перезаписывает тот же файл в target/classes.
+     * Находит корень проекта (там, где pom.xml/build.gradle) и возвращает путь к output.xlsx
+     */
+    private Path getExcelPath() {
+        Path dir = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
+        while (dir != null) {
+            if (Files.exists(dir.resolve("pom.xml")) ||
+                    Files.exists(dir.resolve("build.gradle"))) {
+                return dir.resolve(EXCEL_FILE_NAME);
+            }
+            dir = dir.getParent();
+        }
+        // если не нашли pom.xml — вернём просто user.dir/output.xlsx
+        return Paths.get(System.getProperty("user.dir"))
+                .resolve(EXCEL_FILE_NAME);
+    }
+
+    /**
+     * Ищет в листе строку с заданным uuid, записывает в неё discordId и сохраняет файл.
      */
     public void assignDiscordIdToServerRow(String uuid, String discordId)
-            throws IOException, InvalidFormatException, URISyntaxException
+            throws IOException, InvalidFormatException
     {
-        // 1) Открываем шаблон из ресурсов
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(EXCEL_RESOURCE)) {
-            if (is == null) {
-                throw new FileNotFoundException("Ресурс не найден: " + EXCEL_RESOURCE);
-            }
-            Workbook workbook = WorkbookFactory.create(is);
-            Sheet sheet = workbook.getSheetAt(0);
+        Path excelPath = getExcelPath();
 
-            // 2) Заполняем ячейку с Discord ID
+        // 1) Открываем существующий Excel-файл
+        try (InputStream in = Files.newInputStream(excelPath);
+             Workbook wb = WorkbookFactory.create(in))
+        {
+            Sheet sheet = wb.getSheetAt(0);
+            boolean updated = false;
+
+            // 2) Ищем строку с совпадающим UUID и пишем Discord ID
             for (Row row : sheet) {
-                Cell uuidCell = row.getCell(0);
+                Cell uuidCell = row.getCell(UUID_COLUMN_INDEX);
                 if (uuidCell != null && uuid.equals(uuidCell.getStringCellValue())) {
-                    Cell discordCell = row.getCell(DISCORD_COLUMN_INDEX);
-                    if (discordCell == null) {
-                        discordCell = row.createCell(DISCORD_COLUMN_INDEX);
-                    }
+                    Cell discordCell = row.getCell(
+                            DISCORD_COLUMN_INDEX,
+                            Row.MissingCellPolicy.CREATE_NULL_AS_BLANK
+                    );
                     discordCell.setCellValue(discordId);
+                    updated = true;
                     break;
                 }
             }
 
-            // 3) Находим реальный путь к файлу в target/classes
-            URL resourceUrl = getClass().getClassLoader().getResource(EXCEL_RESOURCE);
-            if (resourceUrl == null) {
-                throw new FileNotFoundException("Ресурс не найден при сохранении: " + EXCEL_RESOURCE);
+            if (!updated) {
+                System.err.println("[WARN] UUID not found in Excel: " + uuid);
             }
-            // URL → URI → Path (пробелы раскодируются автоматически)
-            URI uri = resourceUrl.toURI();
-            Path path = Paths.get(uri);
 
-            // 4) Записываем изменения
-            //    Используем Files.newOutputStream, чтобы не возиться с FileOutputStream напрямую
-            try (OutputStream os = Files.newOutputStream(path)) {
-                workbook.write(os);
-            } finally {
-                workbook.close();
+            // 3) Перезаписываем файл на диске тем же путём
+            try (OutputStream out = Files.newOutputStream(
+                    excelPath,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE))
+            {
+                wb.write(out);
             }
         }
     }

@@ -26,6 +26,8 @@ public class ServerInfo {
     private String updatedAt;
     private String suspended;
 
+    private String discordId;
+
     // Геттеры и сеттеры для всех полей:
     public String getUuid() { return uuid; }
     public void setUuid(String uuid) { this.uuid = uuid; }
@@ -95,4 +97,10 @@ public class ServerInfo {
 
     public String getSuspended() { return suspended; }
     public void setSuspended(String suspended) { this.suspended = suspended; }
+
+    public String getDiscordId() { return discordId; }
+    public void setDiscordId(String discordId) {
+        this.discordId = discordId;
+    }
+
 }
