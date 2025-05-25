@@ -7,8 +7,8 @@ public final class DataExtractor {
     private DataExtractor() {}
 
     /**
-     * Извлекает значение по цепочке ключей из вложенных карт.
-     * Если где-то не карта или нет ключа, вернёт пустую строку.
+     * Извлекает значение по цепочке ключей из вложенных мап.
+     * Если где-то не мапа или нет ключа, вернёт пустую строку.
      */
     public static Object getValue(Map<String, Object> data, String... path) {
         if (path == null || path.length == 0) return "";

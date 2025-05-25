@@ -1,7 +1,6 @@
 package com.example.giantprojekt.service.CreateExcelServices.GettingInfoFromPanel;
 
 import com.example.giantprojekt.configs.ServerConfig;
-import com.example.giantprojekt.service.CreateExcelServices.GettingInfoFromPanel.HttpClientUtil;
 import com.google.gson.JsonObject;
 
 import java.util.HashMap;

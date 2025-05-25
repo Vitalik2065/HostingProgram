@@ -9,8 +9,8 @@ import java.util.ResourceBundle;
 
 /**
  * Синглтон-сервис для вызова Pterodactyl Application API.
- *  – Всегда добавляет «Bearer » к токену (если вы не написали его вручную).<br>
- *  – Читает тело ошибки и прокидывает его в ApiException, чтобы понять причину 4xx/5xx.
+ *  – Всегда добавляет «Bearer ».<br>
+ *  – Читает тело ошибки и прокидывает его в ApiException, чтобы понять причину.
  */
 public final class PterodactylApiService {
 
